@@ -37,22 +37,6 @@ jobs:
           copy zdll.lib \zlib\lib\
           copy zdll.exp \zlib\lib\
 
-      - name: Create pkgconfig File
-        run: |
-          mkdir \zlib\lib\pkgconfig
-
-          >> \zlib\lib\pkgconfig\zlib.pc echo prefix=${pcfiledir}/../..
-          >> \zlib\lib\pkgconfig\zlib.pc echo exec_prefix=${prefix}
-          >> \zlib\lib\pkgconfig\zlib.pc echo libdir=${prefix}/lib
-          >> \zlib\lib\pkgconfig\zlib.pc echo includedir=${prefix}/include
-          >> \zlib\lib\pkgconfig\zlib.pc echo.
-          >> \zlib\lib\pkgconfig\zlib.pc echo Name: zlib
-          >> \zlib\lib\pkgconfig\zlib.pc echo Description: zlib compression library
-          >> \zlib\lib\pkgconfig\zlib.pc echo Version: ${{ vars.ZLIB_VERSION }}
-          >> \zlib\lib\pkgconfig\zlib.pc echo Requires:
-          >> \zlib\lib\pkgconfig\zlib.pc echo Libs: -L${libdir} -lzdll
-          >> \zlib\lib\pkgconfig\zlib.pc echo Cflags: -I${includedir}
-        shell: cmd
 
       - name: Upload Source
         uses: actions/upload-artifact@v4
