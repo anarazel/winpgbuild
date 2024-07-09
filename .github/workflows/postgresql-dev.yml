@@ -72,6 +72,11 @@ jobs:
         run: |
           echo "CC=$(where.exe ccache) `"$(where.exe cl)`"" >> $ENV:GITHUB_ENV
 
+      # faster meson configure, only important for faster iteration
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
       # This is run as a privileged user. For some reason windows ends up
       # creating the directories owned by "Administrator", which causes
       # problems because when postgres drops privileges, it doesn't have
