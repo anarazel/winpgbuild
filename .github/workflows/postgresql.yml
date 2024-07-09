@@ -60,7 +60,16 @@ jobs:
           echo "/builddeps" >> $ENV:GITHUB_PATH
           echo "/postgresql/bin" >> $ENV:GITHUB_PATH
 
+      - name: Clone Postgres
+        uses: actions/checkout@v4
+        with:
+          repository: postgres/postgres
+          ref: ${{ matrix.version }}
+          path: postgresql-${{ matrix.version }}
+          show-progress: 'false'
+
       - name: Download
+        if: false
         run: |
           curl https://ftp.postgresql.org/pub/source/v${{ matrix.version }}/postgresql-${{ matrix.version }}.tar.gz -o ./postgresql-${{ matrix.version }}.tar.gz
           tar zxvf postgresql-${{ matrix.version }}.tar.gz
@@ -117,6 +126,7 @@ jobs:
         shell: cmd
 
       - name: Upload Source
+        if: false
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
