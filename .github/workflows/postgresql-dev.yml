@@ -7,6 +7,12 @@ jobs:
       fail-fast: false
 
     runs-on: windows-latest
+
+    env:
+      CCACHE_INODECACHE: 1
+      CCACHE_SLOPPINESS: pch_defines, time_macros
+      CCACHE_DEPEND: 1
+
     steps:
       - uses: ilammy/msvc-dev-cmd@v1
 
@@ -47,6 +53,24 @@ jobs:
           echo "/builddeps/bin" >> $ENV:GITHUB_PATH
           echo "/builddeps" >> $ENV:GITHUB_PATH
           echo "/postgresql/bin" >> $ENV:GITHUB_PATH
+
+      # version in hendrikmuhs/ccache-action@v1.2.13 isn't new enough
+      - name: download ccache
+        run: |
+          curl.exe -L -o ccache.zip 'https://github.com/ccache/ccache/releases/download/v4.10.1/ccache-4.10.1-windows-x86_64.zip'
+          unzip -j ccache.zip ccache-4.10.1-windows-x86_64/ccache.exe
+          mv ccache.exe C:\ProgramData\kind
+          rm ccache.zip
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2.13
+        with:
+          key: postgresql-${{ vars.POSTGRESQL_DEV_VERSION }}
+          verbose: 1
+
+      - name: setup compiler for ccache
+        run: |
+          echo "CC=$(where.exe ccache) `"$(where.exe cl)`"" >> $ENV:GITHUB_ENV
 
       # This is run as a privileged user. For some reason windows ends up
       # creating the directories owned by "Administrator", which causes
@@ -95,6 +119,7 @@ jobs:
               -Duuid=ossp `
               -Db_pch=true `
               -Dbuildtype=debugoptimized `
+              -Dc_args='/Z7' `
               build
 
       - name: Build
