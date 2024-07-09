@@ -60,10 +60,18 @@ jobs:
         run: |
           icacls.exe . /inheritance:e /grant 'runneradmin:(OI)(CI)F'
 
-      - name: Download
+      # Currently required to prevent a few tests from failing
+      - name: Configure git
         run: |
-          curl https://ftp.postgresql.org/pub/source/v${{ vars.POSTGRESQL_DEV_VERSION }}/postgresql-${{ vars.POSTGRESQL_DEV_VERSION }}.tar.gz -o ./postgresql-dev-${{ vars.POSTGRESQL_DEV_VERSION }}.tar.gz
-          tar zxvf postgresql-dev-${{ vars.POSTGRESQL_DEV_VERSION }}.tar.gz
+          git config --global core.autocrlf false
+
+      - name: Clone Postgres
+        uses: actions/checkout@v4
+        with:
+          repository: anarazel/postgres
+          ref: winbuild
+          path: postgresql-${{ vars.POSTGRESQL_DEV_VERSION }}
+          show-progress: 'false'
 
       - name: Configure
         run: |
@@ -126,6 +134,7 @@ jobs:
           meson install --quiet
 
       - name: Upload Source
+        if: false
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
