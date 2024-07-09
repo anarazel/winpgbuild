@@ -16,46 +16,23 @@ jobs:
       - name: Configure
         run: |
           cd zstd-${{ vars.ZSTD_VERSION }}
-          devenv.com /upgrade build\VS2010\zstd.sln
+          # With cmake there's VS 2022 msbuild issue, recently fixed
+          # https://github.com/facebook/zstd/commit/65ab6c26
+          # so use meson
+          pip install meson
+          meson setup build-meson ./build/meson --wipe --prefix=/zstd --buildtype=release
 
       - name: Build
         run: |
           cd zstd-${{ vars.ZSTD_VERSION }}
-          msbuild build\VS2010\zstd.sln -target:libzstd-dll /property:Configuration=Release /property:Platform=x64
+          meson compile -C build-meson
 
       - name: Install
         run: |
           cd zstd-${{ vars.ZSTD_VERSION }}
-
-          mkdir \zstd
-
-          mkdir \zstd\bin
-          copy build\VS2010\bin\x64_Release\libzstd.dll \zstd\bin\
-          copy build\VS2010\bin\x64_Release\libzstd.pdb \zstd\bin\
-
-          mkdir \zstd\include
-          copy lib\*.h \zstd\include\
-
-          mkdir \zstd\lib
-          copy build\VS2010\bin\x64_Release\libzstd.lib \zstd\lib\
-
-      - name: Create pkgconfig File
-        run: |
-          mkdir \zstd\lib\pkgconfig
-
-          >> \zstd\lib\pkgconfig\libzstd.pc echo prefix=${pcfiledir}/../..
-          >> \zstd\lib\pkgconfig\libzstd.pc echo exec_prefix=${prefix}
-          >> \zstd\lib\pkgconfig\libzstd.pc echo libdir=${prefix}/lib
-          >> \zstd\lib\pkgconfig\libzstd.pc echo includedir=${prefix}/include
-          >> \zstd\lib\pkgconfig\libzstd.pc echo.
-          >> \zstd\lib\pkgconfig\libzstd.pc echo Name: zstd
-          >> \zstd\lib\pkgconfig\libzstd.pc echo Description: fast lossless compression algorithm library
-          >> \zstd\lib\pkgconfig\libzstd.pc echo URL: https://facebook.github.io/zstd/
-          >> \zstd\lib\pkgconfig\libzstd.pc echo Version: ${{ vars.ZSTD_VERSION }}
-          >> \zstd\lib\pkgconfig\libzstd.pc echo Libs: -L${libdir} -lzstd
-          >> \zstd\lib\pkgconfig\libzstd.pc echo Libs.private:
-          >> \zstd\lib\pkgconfig\libzstd.pc echo Cflags: -I${includedir}
-        shell: cmd
+          meson install -C build-meson
+          # backward compatibility with src/tools/msvc build for PG <= 16
+          copy \zstd\lib\zstd.lib \zstd\lib\libzstd.lib
 
       - name: Upload Source
         uses: actions/upload-artifact@v4
