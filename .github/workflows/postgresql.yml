@@ -7,6 +7,7 @@ jobs:
       fail-fast: false
       matrix:
         version: ${{ fromJSON(vars.POSTGRESQL_VERSIONS) }}
+        msbflags: ["-m -verbosity:minimal \"-consoleLoggerParameters:Summary;ForceNoAlign\" /p:TrackFileAccess=false -nologo", ""]
 
     runs-on: windows-latest
 
@@ -17,7 +18,7 @@ jobs:
     # disable file tracker, we're never going to rebuild, and it slows down the
     #   build
     env:
-      MSBFLAGS: -m -verbosity:minimal "-consoleLoggerParameters:Summary;ForceNoAlign" /p:TrackFileAccess=false -nologo
+      MSBFLAGS: ${{ matrix.msbflags }}
 
     steps:
       - uses: ilammy/msvc-dev-cmd@v1
