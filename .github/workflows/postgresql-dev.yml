@@ -28,18 +28,18 @@ jobs:
           mkdir \postgresql
           mkdir \postgresql\bin
 
-          copy \builddeps\bin64\icuuc*.dll \postgresql\bin\
-          copy \builddeps\bin64\icudt*.dll \postgresql\bin\
-          copy \builddeps\bin64\icuin*.dll \postgresql\bin\
-          copy \builddeps\bin\libiconv-2.dll \postgresql\bin\
-          copy \builddeps\bin\libintl-8.dll \postgresql\bin\
-          copy \builddeps\bin\libxml2.dll \postgresql\bin\
-          copy \builddeps\bin\libxslt.dll \postgresql\bin\
-          copy \builddeps\bin\libssl-*-x64.dll \postgresql\bin\
-          copy \builddeps\bin\libcrypto-*-x64.dll \postgresql\bin\
-          copy \builddeps\bin\liblz4.dll \postgresql\bin\
-          copy \builddeps\bin\libzstd.dll \postgresql\bin\
-          copy \builddeps\bin\zlib1.dll \postgresql\bin\
+          copy \builddeps\bin64\*icuuc*.dll \postgresql\bin\
+          copy \builddeps\bin64\*icudt*.dll \postgresql\bin\
+          copy \builddeps\bin64\*icuin*.dll \postgresql\bin\
+          copy \builddeps\bin\*iconv*.dll \postgresql\bin\
+          copy \builddeps\bin\*intl*.dll \postgresql\bin\
+          copy \builddeps\bin\*xml2*.dll \postgresql\bin\
+          copy \builddeps\bin\*xslt*.dll \postgresql\bin\
+          copy \builddeps\bin\*ssl-*-x64*.dll \postgresql\bin\
+          copy \builddeps\bin\*crypto-*-x64*.dll \postgresql\bin\
+          copy \builddeps\bin\*lz4*.dll \postgresql\bin\
+          copy \builddeps\bin\*zstd*.dll \postgresql\bin\
+          copy \builddeps\bin\*zlib*.dll \postgresql\bin\
 
       - name: Add build deps to path
         run: |
